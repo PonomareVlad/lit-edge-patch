@@ -1,5 +1,5 @@
 {
-  "name": "lit-edge-patch",
+  "name": "lit-edge-utils",
   "version": "0.0.0",
   "scripts": {
     "patch": "node patch.mjs",
