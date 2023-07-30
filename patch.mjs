@@ -21,6 +21,7 @@ for (const p of [p1, p2]) {
       } else {
         json.exports[key] = {
           types: value.types,
+          browser: value.node,
           worker: value.node,
           node: value.node,
           development: value.development,
