@@ -16,15 +16,19 @@ for (const p of [p1, p2, p3]) {
           types: value.types,
           // no worker
           node: value.node,
+          import: value.import,
+          require: value.require,
           development: value.development,
           default: value.default
         }
       } else {
         json.exports[key] = {
           types: value.types,
-          browser: value.node,
-          worker: value.node,
+          browser: value.node || value.import,
+          worker: value.node || value.import,
           node: value.node,
+          import: value.import,
+          require: value.require,
           development: value.development,
           default: value.default
         }
