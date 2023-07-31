@@ -1,56 +1,52 @@
-export class RenderResultReadableStream {
+export function stream(result) {
 
-    constructor(result) {
+    let closed;
 
-        this._result = result;
-        this._iterators = [this._result[Symbol.iterator]()];
+    const encoder = new TextEncoder();
+    const iterators = [result[Symbol.iterator]()];
 
-        const encoder = new TextEncoder();
+    return new ReadableStream({
 
-        return new ReadableStream({
+        cancel: () => closed = true,
 
-            pull: async (controller) => {
+        pull: async (controller) => {
 
-                let iterator = this._iterators.pop();
+            let iterator = iterators.pop();
 
-                while (iterator !== undefined) {
+            while (iterator !== undefined) {
 
-                    const next = iterator.next();
+                const next = iterator.next();
 
-                    if (next.done === true) {
+                if (next.done === true) {
 
-                        iterator = this._iterators.pop();
+                    iterator = iterators.pop();
 
-                        continue;
-
-                    }
-
-                    const value = next.value;
-
-                    if (typeof value === 'string') {
-
-                        controller.enqueue(encoder.encode(value));
-
-                        if (this.closed) return;
-
-                    } else {
-
-                        this._iterators.push(iterator);
-
-                        iterator = (await value)[Symbol.iterator]();
-
-                    }
+                    continue;
 
                 }
 
-                controller.close();
+                const value = next.value;
 
-            },
+                if (typeof value === "string") {
 
-            cancel: () => this.closed = true
+                    controller.enqueue(encoder.encode(value));
 
-        });
+                    if (closed) return;
 
-    }
+                } else {
+
+                    iterators.push(iterator);
+
+                    iterator = (await value)[Symbol.iterator]();
+
+                }
+
+            }
+
+            controller.close();
+
+        }
+
+    });
 
 }
